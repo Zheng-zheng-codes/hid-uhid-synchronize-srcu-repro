@@ -46,7 +46,7 @@ calls `hid_destroy_device()` on the `hid_bpf_device_init()` failure path.
 | 7.1.3 | `7.1.3-kernsight-kasan #13` | KASAN/KCOV, `CONFIG_FAULT_INJECTION=y`, failslab enabled |
 | 7.3.0 | `7.3.0-kernsight-kasan #1` | vanilla 7.3.0 (tarball sha256 `87363c24f10e06321eb362765521094e94471f6bff8bce2d6b3e40f39f004953`) + KASAN/KCOV |
 
-No SCTP/HID source changes were made for this testing (for 7.3.0,
+No HID source changes were made for this testing (for 7.3.0,
 `drivers/hid/` matches vanilla apart from build artifacts).
 
 ## Observed results
@@ -67,6 +67,10 @@ No SCTP/HID source changes were made for this testing (for 7.3.0,
 
 All runs used a fresh KVM guest, a threaded executor, `sandbox=none`,
 `procs=1`, `repeat=1`, no extra syzkaller features, 4 vCPU / 6 GiB, QEMU 6.2.0.
+The host/guest commands and console outputs of the three runs are recorded in
+`RUNS.md`. Note that `repro.prog` keeps the original syzkaller repro options in
+its first line (`Threaded:true Repeat:true Procs:6 ...`); that is the saved
+reproducer setting, while the manual replays used `-procs=1 -repeat=1`.
 syzkaller revision `853b104bb454141a5b0fc0e4218ec78e9f34ffb1+` (local KernSight
 integration changes only; syscall descriptions and fault-injection semantics
 are unchanged).
@@ -103,7 +107,7 @@ execution the kernel logged:
 
 ```
 FAULT_INJECTION: forcing a failure.
-name failslab, interval 1, probability 0, space 0, times 1
+name failslab, interval 1, probability 0, space 0, times 0
 ```
 
 followed by the GPF report.
@@ -135,6 +139,7 @@ logs/serial-7.3-minimal1.log  standalone 7.3.0 run 1 (no trigger)
 logs/serial-7.3-minimal2.log  standalone 7.3.0 run 2 (no trigger)
 kernel/                       kernel configs
 cmdline/                      kernel command lines
+RUNS.md                       exact host/guest commands and console outputs
 verify.sh                     checks the numbers quoted above
 MANIFEST.sha256               sha256 of every file
 ```
