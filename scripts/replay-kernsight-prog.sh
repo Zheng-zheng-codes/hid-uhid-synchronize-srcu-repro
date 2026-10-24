@@ -3,7 +3,7 @@
 # 由 /data/zhengzheng/7.2.11bug/demo-state.sh 调用(容器内执行)。
 #
 # 用法: replay-kernsight-prog.sh <kernel> <prog> <port> <out-dir> <tag>
-#   kernel: 7.2.11 | 7.3-rc7 (validation/linux-<kernel>-validate)
+#   kernel: 7.3 (also used: 7.1.3, 7.2.11; validation/linux-<kernel>-validate)
 set -u
 KV="$1"; PROG="$2"; PORT="$3"; OUT="$4"; TAG="$5"
 KERNEL="/workspace/validation/linux-$KV-validate/bzImage"
