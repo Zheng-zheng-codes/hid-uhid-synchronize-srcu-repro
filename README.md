@@ -18,28 +18,26 @@ Call Trace:
 `hid_allocate_device()` calls `hid_bpf_device_init()` (which runs
 `init_srcu_struct(&hdev->bpf.srcu)`). If that call fails, the `out_err` path
 calls `hid_destroy_device()` → `hid_bpf_destroy_device()`, which unconditionally
-runs `synchronize_srcu(&hdev->bpf.srcu)` and `cleanup_srcu_struct()`. The SRCU
-was never initialized, so `check_init_srcu_struct()` dereferences the zeroed
-structure and the kernel takes a GPF/null-ptr-deref.
+runs `synchronize_srcu(&hdev->bpf.srcu)` and `cleanup_srcu_struct()`. SRCU
+initialization failed, but the error path still invokes `synchronize_srcu()` on
+the unsuccessfully initialized SRCU structure; `check_init_srcu_struct()` then
+dereferences it and the kernel takes a GPF/null-ptr-deref.
 
 The reproducer makes `hid_bpf_device_init()` fail with a fault-injection
 allocation failure (`failslab`, `fail_nth: 5` on the `UHID_CREATE` write).
 
 ## Related patch
 
-- `[PATCH] HID: core: fix device cleanup on ...` — Tristan Madani, 2026-09-04,
-  <https://lkml.org/lkml/2026/9/4/639> (follow-up:
-  <https://lkml.org/lkml/2026/9/4/2848>). The subject is quoted from the
-  archive listing; the full text could not be retrieved from the public
-  archives here (bot protection).
-- Related context (different path): `[PATCH] HID: bpf: abort dispatch if device
-  destroyed` — Rong Zhang, CVE-2025-38016 (accesses a cleaned-up SRCU from the
-  dispatch path after `hid_bpf_destroy_device()`).
+This exact error path is addressed by:
 
-The tested kernels **do not include** the fix: `hid_bpf_destroy_device()` still
-calls `synchronize_srcu()`/`cleanup_srcu_struct()` unconditionally and
-`hid_allocate_device()` still calls `hid_destroy_device()` on the
-`hid_bpf_device_init()` failure path.
+- `[PATCH] HID: core: fix device cleanup on allocation failure` — Tristan
+  Madani, 2026-09-04, <https://lkml.iu.edu/2609.0/09658.html>. The patch
+  replaces `hid_destroy_device()` with `put_device()` in the
+  `hid_allocate_device()` error path (also carries `Fixes: 6cd735f0e57a` and
+  `Cc: stable`).
+
+The tested kernels **do not include** the fix: `hid_allocate_device()` still
+calls `hid_destroy_device()` on the `hid_bpf_device_init()` failure path.
 
 ## Tested kernels
 
