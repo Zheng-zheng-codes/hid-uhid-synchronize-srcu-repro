@@ -140,6 +140,7 @@ logs/serial-7.3-minimal2.log  standalone 7.3.0 run 2 (no trigger)
 kernel/                       kernel configs
 cmdline/                      kernel command lines
 RUNS.md                       exact host/guest commands and console outputs
+scripts/replay-kernsight-prog.sh   the exact run script used
 verify.sh                     checks the numbers quoted above
 MANIFEST.sha256               sha256 of every file
 ```

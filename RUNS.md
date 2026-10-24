@@ -1,6 +1,9 @@
 # Run records
 
-All runs were started from the KernSight container on the host, with QEMU 6.2.0
+The exact run script used for all three runs is
+`scripts/replay-kernsight-prog.sh` (it expects the KernSight container paths
+shown below). All runs were started from the KernSight container on the host,
+with QEMU 6.2.0
 and the 7.3.0 kernel image
 `/workspace/validation/linux-7.3-validate/bzImage` (release
 `7.3.0-kernsight-kasan #1`). The guest command line is
@@ -70,5 +73,7 @@ Observed:
   (`logs/execprog-7.3-minimal2.txt`); serial has no GPF
   (`logs/serial-7.3-minimal2.log`).
 
-So both standalone runs completed the program execution (EXIT:0) without
-triggering the GPF.
+Both standalone `syz-execprog` invocations exited with status 0. Neither
+corresponding serial log contains the target GPF. The captured output does not
+include a final executed-program count (the `executed programs: 0` line is a
+progress print emitted before the program index advances, not a final count).
