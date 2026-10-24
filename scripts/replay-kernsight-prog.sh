@@ -1,6 +1,6 @@
 #!/bin/bash
-# replay-kernsight-prog.sh — 在 7.2.11 VM 内按顺序重放 repro.kernsight.prog。
-# 由 /data/zhengzheng/7.2.11bug/demo-state.sh 调用(容器内执行)。
+# replay-kernsight-prog.sh — 在指定内核（如 7.3）的 VM 内按顺序重放 repro.kernsight.prog。
+# 在 KernSight 容器内执行；调用方传入内核标签、prog、端口、输出目录和 tag。
 #
 # 用法: replay-kernsight-prog.sh <kernel> <prog> <port> <out-dir> <tag>
 #   kernel: 7.3 (also used: 7.1.3, 7.2.11; validation/linux-<kernel>-validate)
